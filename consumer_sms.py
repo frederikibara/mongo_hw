@@ -1,10 +1,11 @@
 import pika
+from data.emoji import emoji_bank
 from models.contact_model import Contact
 
 def callback(ch, method, properties, body):
     contact_id = body.decode('utf-8')
     contact = Contact.objects.get(id=contact_id)
-    print(f"Sending SMS to {contact.phone}")
+    print(f'{emoji_bank.get_emoji(2)} Відправочка SMS : {contact.phone}')
     contact.sent = True
     contact.save()
 
@@ -14,7 +15,7 @@ def consume():
     channel.queue_declare(queue='sms_queue')
 
     channel.basic_consume(queue='sms_queue', on_message_callback=callback, auto_ack=True)
-    print('Waiting for SMS...')
+    print(f'{emoji_bank.get_emoji(1)} Очікую на SMSочку...')
     channel.start_consuming()
 
 if __name__ == '__main__':
